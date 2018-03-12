@@ -27,7 +27,7 @@ class Client:
       self._token = f"Bearer {rtjson['access_token']}"
       self._expiration = monotonic() + int(rtjson['expires_in'])
     
-  async def _auth_reqeust(self,*args, **kwargs):
+  async def _auth_request(self,*args, **kwargs):
     if monotonic() > self._expiration:
       await self._auth()
     
@@ -49,7 +49,7 @@ class Client:
     
   async def upload(self,file):
     headers = {'Content-Type': 'application/json'}
-    rjson = await self._auth_reqeust('post', 'https://api.gfycat.com/v1/gfycats', headers=headers)
+    rjson = await self._auth_request('post', 'https://api.gfycat.com/v1/gfycats', headers=headers)
     if rjson['isOk']:  
       async with aiofiles.open(file,mode='rb',loop=self._loop) as f:
         fgfy = await f.read()
@@ -66,4 +66,4 @@ class Client:
         
     
   async def status(self,name):
-    return await self._auth_reqeust('get',f'https://api.gfycat.com/v1/gfycats/fetch/status/{name}')
+    return await self._auth_request('get',f'https://api.gfycat.com/v1/gfycats/fetch/status/{name}')
