@@ -5,7 +5,7 @@ from time import monotonic
 
 
 class Client:
-  def __init__(self,id,secret,loop=None,session=None):
+  def __init__(self, id, secret, loop=None, session=None):
     self._id = id
     self._secret = secret
     self._expiration = 0
@@ -27,7 +27,7 @@ class Client:
       self._token = f"Bearer {rtjson['access_token']}"
       self._expiration = monotonic() + int(rtjson['expires_in'])
     
-  async def _auth_request(self,*args, **kwargs):
+  async def _auth_request(self, *args, **kwargs):
     if monotonic() > self._expiration:
       await self._auth()
     
@@ -47,23 +47,23 @@ class Client:
 
   
     
-  async def upload(self,file):
+  async def upload(self, file):
     headers = {'Content-Type': 'application/json'}
     rjson = await self._auth_request('post', 'https://api.gfycat.com/v1/gfycats', headers=headers)
     if rjson['isOk']:  
-      async with aiofiles.open(file,mode='rb',loop=self._loop) as f:
+      async with aiofiles.open(file, mode='rb', loop=self._loop) as f:
         fgfy = await f.read()
         data = aiohttp.FormData()
-        data.add_field('key',rjson['gfyname'])
+        data.add_field('key', rjson['gfyname'])
         data.add_field('file',
                        fgfy,
                        filename=rjson['gfyname'],
                        content_type='video/mp4')
-        async with self._session.request('post','https://filedrop.gfycat.com', data=data) as r2:
+        async with self._session.request('post', 'https://filedrop.gfycat.com', data=data) as r2:
           return rjson['gfyname']
     else:
       print(rjson)
         
     
-  async def status(self,name):
-    return await self._auth_request('get',f'https://api.gfycat.com/v1/gfycats/fetch/status/{name}')
+  async def status(self, name):
+    return await self._auth_request('get', f'https://api.gfycat.com/v1/gfycats/fetch/status/{name}')
