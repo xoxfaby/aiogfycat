@@ -65,5 +65,5 @@ class Client:
       print(rjson)
         
     
-  async def status(self,name):
+  async def status(self, name):
     return await self._auth_request('get', f'https://api.gfycat.com/v1/gfycats/fetch/status/{name}')
