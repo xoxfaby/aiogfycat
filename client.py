@@ -52,6 +52,7 @@ class Client:
           raise ConnectionError("Something went wrong")
 
   async def upload(self, file, type=None):
+    """Upload a new gfy"""
     headers = {'Content-Type': 'application/json'}
     rjson = await self._auth_request('post', 'https://api.gfycat.com/v1/gfycats', headers=headers)
     if rjson['isOk']:
@@ -77,7 +78,9 @@ class Client:
       print(rjson)
 
   async def status(self, name):
+    """Get the status of a gfy"""
     return await self._auth_request('get', f'https://api.gfycat.com/v1/gfycats/fetch/status/{name}')
+
   async def wait_for(self, name):
     """Wait for a gfy to finish uploading"""
     while True:
